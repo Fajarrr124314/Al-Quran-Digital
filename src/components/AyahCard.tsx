@@ -83,7 +83,7 @@ export const AyahCard = React.memo<AyahCardProps>(({
   return (
     <div 
       id={`ayah-${verseNumber}`} 
-      onClick={(e) => {
+      onClick={() => {
         // Don't trigger if user is just selecting text
         const selection = window.getSelection();
         if (selection && selection.toString().length > 0) return;

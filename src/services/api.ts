@@ -92,7 +92,7 @@ export const getSurahList = async (): Promise<Surah[]> => {
   try {
     const response = await axios.get(`${BASE_URL}/chapters?language=id`);
     surahListCache = response.data.chapters;
-    return surahListCache;
+    return surahListCache as Surah[];
   } catch (error) {
     console.error('Error fetching surah list:', error);
     throw error;
