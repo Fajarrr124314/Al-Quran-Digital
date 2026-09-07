@@ -2,19 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { fetchJadwalShalat, type JadwalShalat } from '../services/api';
 import { Moon, Sun, Sunrise, Sunset } from 'lucide-react';
 
-export const PrayerCountdown: React.FC = () => {
+interface PrayerCountdownProps {
+  customJadwal?: JadwalShalat;
+}
+
+export const PrayerCountdown: React.FC<PrayerCountdownProps> = ({ customJadwal }) => {
   const [jadwal, setJadwal] = useState<JadwalShalat | null>(null);
   const [nextPrayer, setNextPrayer] = useState<{ name: string, time: string, icon: any } | null>(null);
   const [timeLeft, setTimeLeft] = useState<string>('--:--:--');
 
   useEffect(() => {
+    if (customJadwal) {
+      setJadwal(customJadwal);
+      return;
+    }
+
     const loadJadwal = async () => {
       try {
         const date = new Date();
         const year = date.getFullYear().toString();
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
         const day = date.getDate().toString().padStart(2, '0');
-        // Gunakan Jakarta (1301) sebagai default jika tidak ada di localStorage
         const data = await fetchJadwalShalat('1301', year, month, day);
         setJadwal(data);
       } catch (error) {
@@ -22,7 +30,7 @@ export const PrayerCountdown: React.FC = () => {
       }
     };
     loadJadwal();
-  }, []);
+  }, [customJadwal]);
 
   useEffect(() => {
     if (!jadwal) return;

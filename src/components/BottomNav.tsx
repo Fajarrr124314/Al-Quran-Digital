@@ -38,15 +38,15 @@ export const BottomNav: React.FC = () => {
                   <div className={clsx(
                     "w-[64px] h-[64px] rounded-full flex items-center justify-center shadow-xl transition-transform duration-300 group-hover:scale-105 group-active:scale-95 border-[5px] border-white dark:border-slate-900",
                     isActive 
-                      ? "bg-gradient-to-tr from-purple-600 to-fuchsia-500 text-white shadow-purple-500/40" 
-                      : "bg-purple-500 text-white shadow-purple-500/30"
+                      ? "bg-gradient-to-tr from-accent-primary to-blue-500 text-white shadow-accent-primary/40" 
+                      : "bg-gradient-to-tr from-teal-500 to-blue-500 text-white shadow-teal-500/30"
                   )}>
                     <Icon className="w-7 h-7" />
                   </div>
                 </div>
                 <span className={clsx(
                   "text-[9px] font-medium transition-colors mt-auto",
-                  isActive ? "text-purple-600 dark:text-purple-400 font-bold" : "text-slate-500 dark:text-slate-400"
+                  isActive ? "text-accent-primary font-bold" : "text-slate-500 dark:text-slate-400"
                 )}>
                   {item.label}
                 </span>

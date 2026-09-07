@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchKotaList, fetchJadwalShalat, type KotaItem, type JadwalShalat } from '../services/api';
 import { Compass, Loader2, MapPin, Calendar, Clock, Sunrise, Sun, Sunset, Moon, Search, X, ChevronDown } from 'lucide-react';
+import { PrayerCountdown } from '../components/PrayerCountdown';
 
 const BULAN_LIST = [
   { value: '01', label: 'Januari' }, { value: '02', label: 'Februari' },
@@ -145,6 +146,13 @@ export const ShalatPage: React.FC = () => {
           Tingkatkan kedisiplinan ibadah dengan jadwal shalat yang akurat sesuai standar Kementerian Agama RI.
         </p>
       </div>
+
+      {/* Tampilkan Hitung Mundur hanya jika melihat hari ini */}
+      {isToday() && jadwal && (
+        <div className="-mt-8 mb-8">
+          <PrayerCountdown customJadwal={jadwal} />
+        </div>
+      )}
 
       {/* Filters: 3 Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto mb-16 relative z-10">
