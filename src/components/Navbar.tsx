@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { Moon, Sun, Menu, X } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import { useDarkMode } from '../hooks/useDarkMode';
 
 // Inline SVG Logo (Outline Style)
@@ -14,7 +14,6 @@ const QuranLogo = () => (
 
 export const Navbar: React.FC = () => {
   const { isDark, toggle } = useDarkMode();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
 
@@ -64,10 +63,7 @@ export const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu when route changes
-  React.useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [location.pathname]);
+
 
   return (
     <>
@@ -122,33 +118,8 @@ export const Navbar: React.FC = () => {
           >
             {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
-
-          {/* Mobile Menu Toggle */}
-          <button 
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-accent-primary"
-            aria-label="Toggle Mobile Menu"
-          >
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
         </div>
       </nav>
-
-      {/* Mobile Menu Dropdown */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-40 top-[72px] bg-slate-900/20 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)}>
-          <div 
-            className="absolute top-0 left-0 right-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xl px-4 py-6 flex flex-col gap-4 animate-in slide-in-from-top-2 duration-200"
-            onClick={e => e.stopPropagation()} // Prevent closing when clicking inside the menu
-          >
-            <NavLink to="/" className={({isActive}) => `px-4 py-3 rounded-xl font-medium ${isActive ? 'bg-accent-primary/10 text-accent-primary' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>Beranda</NavLink>
-            <NavLink to="/quran" className={({isActive}) => `px-4 py-3 rounded-xl font-medium ${isActive ? 'bg-accent-primary/10 text-accent-primary' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>Baca Qur'an</NavLink>
-            <NavLink to="/doa" className={({isActive}) => `px-4 py-3 rounded-xl font-medium ${isActive ? 'bg-accent-primary/10 text-accent-primary' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>Doa Harian</NavLink>
-            <NavLink to="/shalat" className={({isActive}) => `px-4 py-3 rounded-xl font-medium ${isActive ? 'bg-accent-primary/10 text-accent-primary' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>Jadwal Shalat</NavLink>
-            <NavLink to="/tentang" className={({isActive}) => `px-4 py-3 rounded-xl font-medium ${isActive ? 'bg-accent-primary/10 text-accent-primary' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>Tentang</NavLink>
-          </div>
-        </div>
-      )}
     </>
   );
 };

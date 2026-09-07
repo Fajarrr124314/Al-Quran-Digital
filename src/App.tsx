@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
+import { BottomNav } from './components/BottomNav';
 import { LandingPage } from './pages/LandingPage';
 import { QuranPage } from './pages/QuranPage';
 import { SurahDetail } from './pages/SurahDetail';
@@ -10,9 +11,9 @@ import { Footer } from './components/Footer';
 
 function App() {
   return (
-    <div className="min-h-screen transition-colors duration-300">
+    <div className="min-h-screen transition-colors duration-300 relative">
       <Navbar />
-      <main className="pb-12 overflow-x-hidden">
+      <main className="pb-28 md:pb-12 overflow-x-hidden">
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/quran" element={<QuranPage />} />
@@ -23,6 +24,7 @@ function App() {
         </Routes>
       </main>
       <Footer />
+      <BottomNav />
     </div>
   );
 }
