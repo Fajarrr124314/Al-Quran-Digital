@@ -16,12 +16,12 @@ export const ShalatPage: React.FC = () => {
   const [selectedKota, setSelectedKota] = useState<string>('1301'); // Default Jakarta
   
   const currentDate = new Date();
-  const [selectedTahun, setSelectedTahun] = useState<string>(currentDate.getFullYear().toString());
+  const [selectedTahun] = useState<string>(currentDate.getFullYear().toString());
   const [selectedBulan, setSelectedBulan] = useState<string>((currentDate.getMonth() + 1).toString().padStart(2, '0'));
   const [selectedTanggal, setSelectedTanggal] = useState<string>(currentDate.getDate().toString().padStart(2, '0'));
 
   const [jadwal, setJadwal] = useState<JadwalShalat | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Removed unused loading state
   const [jadwalLoading, setJadwalLoading] = useState(true);
 
   // Modal & Search State
@@ -36,8 +36,6 @@ export const ShalatPage: React.FC = () => {
         setKotaList(data);
       } catch (error) {
         console.error("Failed to fetch kota", error);
-      } finally {
-        setLoading(false);
       }
     };
     loadKota();
@@ -93,7 +91,7 @@ export const ShalatPage: React.FC = () => {
 
   const activePrayer = getNextPrayer();
 
-  const WaktuCard = ({ title, id, time, icon: Icon, isActive }: { title: string, id: string, time: string, icon: any, isActive?: boolean }) => (
+  const WaktuCard = ({ title, time, icon: Icon, isActive }: { title: string, time: string, icon: any, isActive?: boolean }) => (
     <div className={`group relative overflow-hidden rounded-3xl p-6 transition-all duration-500 hover:-translate-y-2 hover:shadow-xl ${
       isActive 
         ? 'bg-gradient-to-br from-accent-primary to-teal-600 shadow-accent-primary/30 text-white shadow-lg' 
@@ -221,13 +219,13 @@ export const ShalatPage: React.FC = () => {
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            <WaktuCard title="Imsak" id="imsak" time={jadwal.imsak} icon={Moon} isActive={activePrayer === 'imsak'} />
-            <WaktuCard title="Subuh" id="subuh" time={jadwal.subuh} icon={Sunrise} isActive={activePrayer === 'subuh'} />
-            <WaktuCard title="Dhuha" id="dhuha" time={jadwal.dhuha} icon={Sun} isActive={activePrayer === 'dhuha'} />
-            <WaktuCard title="Dzuhur" id="dzuhur" time={jadwal.dzuhur} icon={Sun} isActive={activePrayer === 'dzuhur'} />
-            <WaktuCard title="Ashar" id="ashar" time={jadwal.ashar} icon={Sun} isActive={activePrayer === 'ashar'} />
-            <WaktuCard title="Maghrib" id="maghrib" time={jadwal.maghrib} icon={Sunset} isActive={activePrayer === 'maghrib'} />
-            <WaktuCard title="Isya" id="isya" time={jadwal.isya} icon={Moon} isActive={activePrayer === 'isya'} />
+            <WaktuCard title="Imsak" time={jadwal.imsak} icon={Moon} isActive={activePrayer === 'imsak'} />
+            <WaktuCard title="Subuh" time={jadwal.subuh} icon={Sunrise} isActive={activePrayer === 'subuh'} />
+            <WaktuCard title="Dhuha" time={jadwal.dhuha} icon={Sun} isActive={activePrayer === 'dhuha'} />
+            <WaktuCard title="Dzuhur" time={jadwal.dzuhur} icon={Sun} isActive={activePrayer === 'dzuhur'} />
+            <WaktuCard title="Ashar" time={jadwal.ashar} icon={Sun} isActive={activePrayer === 'ashar'} />
+            <WaktuCard title="Maghrib" time={jadwal.maghrib} icon={Sunset} isActive={activePrayer === 'maghrib'} />
+            <WaktuCard title="Isya" time={jadwal.isya} icon={Moon} isActive={activePrayer === 'isya'} />
           </div>
         </div>
       )}

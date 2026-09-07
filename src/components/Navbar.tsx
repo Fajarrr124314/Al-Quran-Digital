@@ -102,7 +102,7 @@ export const Navbar: React.FC = () => {
               <NavLink 
                 key={item.path} 
                 to={item.path}
-                ref={el => navRefs.current[i] = el}
+                ref={el => { navRefs.current[i] = el; }}
                 className={({isActive}) => `relative z-10 px-4 py-2 text-sm font-semibold rounded-full transition-colors duration-300 ${
                   isActive 
                     ? 'text-white' 
