@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Pause, Bookmark, Share2, Settings2 } from 'lucide-react';
+import { Play, Pause, Bookmark, Share2, Settings2, X } from 'lucide-react';
 import clsx from 'clsx';
 
 const RECITERS = [
@@ -36,7 +36,7 @@ interface AyahCardProps {
   onReciterChange?: (id: number) => void;
 }
 
-export const AyahCard: React.FC<AyahCardProps> = ({
+export const AyahCard = React.memo<AyahCardProps>(({
   verseNumber,
   textUthmani,
   textUthmaniTajweed,
@@ -58,22 +58,6 @@ export const AyahCard: React.FC<AyahCardProps> = ({
   onReciterChange
 }) => {
   const [showSettings, setShowSettings] = React.useState(false);
-  const settingsRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
-        setShowSettings(false);
-      }
-    };
-
-    if (showSettings) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showSettings]);
 
   const handleShare = async () => {
     // Strip HTML tags from tajweed for sharing
@@ -97,10 +81,22 @@ export const AyahCard: React.FC<AyahCardProps> = ({
   };
 
   return (
-    <div id={`ayah-${verseNumber}`} className={clsx(
-      "glass rounded-xl p-6 md:p-8 mb-6 relative group transition-all duration-300 hover:border-accent-primary/30",
-      showSettings ? "z-50" : "z-10"
-    )}>
+    <div 
+      id={`ayah-${verseNumber}`} 
+      onClick={(e) => {
+        // Don't trigger if user is just selecting text
+        const selection = window.getSelection();
+        if (selection && selection.toString().length > 0) return;
+        if (onPlayToggle) onPlayToggle();
+      }}
+      className={clsx(
+        "glass rounded-xl p-6 md:p-8 mb-6 relative group transition-all duration-300 cursor-pointer",
+        showSettings ? "z-50" : "z-10",
+        isPlaying 
+          ? "ring-2 ring-accent-primary dark:ring-white shadow-xl bg-slate-50/80 dark:bg-slate-800/80 md:scale-[1.02] border-transparent" 
+          : "border border-slate-200/50 dark:border-slate-700/50 hover:border-accent-primary/30"
+      )}
+    >
       <div className="flex flex-col md:flex-row justify-between items-start gap-6">
         
         {/* Left Side: Number and Actions */}
@@ -113,7 +109,7 @@ export const AyahCard: React.FC<AyahCardProps> = ({
           <div className="flex md:flex-col gap-2 ml-auto md:ml-0">
             {hasAudio && (
               <button 
-                onClick={onPlayToggle}
+                onClick={(e) => { e.stopPropagation(); if(onPlayToggle) onPlayToggle(); }}
                 className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/50 hover:bg-accent-primary/10 text-slate-500 dark:text-slate-400 hover:text-accent-primary dark:hover:text-accent-primary border border-transparent hover:border-accent-primary/20 transition-all"
                 title={isPlaying ? "Pause Audio" : "Play Audio"}
               >
@@ -121,7 +117,7 @@ export const AyahCard: React.FC<AyahCardProps> = ({
               </button>
             )}
             <button 
-              onClick={onBookmarkToggle}
+              onClick={(e) => { e.stopPropagation(); if(onBookmarkToggle) onBookmarkToggle(); }}
               className={clsx(
                 "p-2.5 rounded-xl border transition-all",
                 isBookmarked 
@@ -133,7 +129,7 @@ export const AyahCard: React.FC<AyahCardProps> = ({
               <Bookmark className={clsx("w-5 h-5", isBookmarked && "fill-current")} />
             </button>
             <button 
-              onClick={handleShare}
+              onClick={(e) => { e.stopPropagation(); handleShare(); }}
               title="Bagikan Ayat"
               className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white border border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-all"
             >
@@ -176,7 +172,7 @@ export const AyahCard: React.FC<AyahCardProps> = ({
           </div>
           
           {/* Settings & Jump Actions */}
-          <div className="mt-6 flex flex-wrap items-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+          <div className="mt-6 flex flex-wrap items-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800" onClick={(e) => e.stopPropagation()}>
             {/* Jump Dropdown */}
             {totalVerses && (
               <div className="inline-flex items-center gap-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-full px-4 py-1.5 shadow-sm transition-all hover:bg-slate-100 dark:hover:bg-slate-700">
@@ -206,54 +202,79 @@ export const AyahCard: React.FC<AyahCardProps> = ({
             )}
             
             {/* Settings Button */}
-            <div className="relative" ref={settingsRef}>
+            <div>
               <button 
-                onClick={() => setShowSettings(!showSettings)}
+                onClick={(e) => { e.stopPropagation(); setShowSettings(true); }}
                 className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all shadow-sm text-xs font-medium"
               >
                 <Settings2 className="w-3.5 h-3.5" />
                 <span>Pengaturan</span>
               </button>
-              
-              {showSettings && (
-                <div className="absolute left-0 top-full mt-2 w-56 sm:w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl p-4 z-50 text-left">
-                  <h4 className="text-sm font-semibold text-slate-800 dark:text-white mb-3 border-b border-slate-100 dark:border-slate-800 pb-2">Pengaturan Tampilan</h4>
-                  
-                  <div className="space-y-4">
-                    <div className="space-y-3">
-                      <label className="flex items-center justify-between cursor-pointer group">
-                        <span className="text-xs text-slate-600 dark:text-slate-300 group-hover:text-accent-primary transition-colors">Tajwid Berwarna</span>
-                        <input type="checkbox" checked={showTajweed} onChange={onToggleTajweed} className="w-4 h-4 rounded text-accent-primary focus:ring-accent-primary" />
-                      </label>
-                      <label className="flex items-center justify-between cursor-pointer group">
-                        <span className="text-xs text-slate-600 dark:text-slate-300 group-hover:text-accent-primary transition-colors">Teks Latin</span>
-                        <input type="checkbox" checked={showLatin} onChange={onToggleLatin} className="w-4 h-4 rounded text-accent-primary focus:ring-accent-primary" />
-                      </label>
-                      <label className="flex items-center justify-between cursor-pointer group">
-                        <span className="text-xs text-slate-600 dark:text-slate-300 group-hover:text-accent-primary transition-colors">Terjemahan</span>
-                        <input type="checkbox" checked={showTranslation} onChange={onToggleTranslation} className="w-4 h-4 rounded text-accent-primary focus:ring-accent-primary" />
-                      </label>
-                    </div>
-
-                    <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-                      <h5 className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Audio Qari</h5>
-                      <select 
-                        value={selectedReciter} 
-                        onChange={(e) => onReciterChange?.(parseInt(e.target.value, 10))}
-                        className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs rounded-lg focus:ring-accent-primary focus:border-accent-primary block p-2"
-                      >
-                        {RECITERS.map(r => (
-                          <option key={r.id} value={r.id}>{r.name}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Settings Modal */}
+      {showSettings && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4" onClick={(e) => e.stopPropagation()}>
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onClick={() => setShowSettings(false)}></div>
+          
+          <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl shadow-2xl relative z-10 p-5 border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200 text-left">
+            <div className="flex items-center justify-between mb-5 border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h4 className="text-base font-bold text-slate-800 dark:text-white">Pengaturan Tampilan</h4>
+              <button 
+                onClick={() => setShowSettings(false)}
+                className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <label className="flex items-center justify-between cursor-pointer group">
+                  <span className="text-sm font-medium text-slate-600 dark:text-slate-300 group-hover:text-accent-primary transition-colors">Tajwid Berwarna</span>
+                  <input type="checkbox" checked={showTajweed} onChange={onToggleTajweed} className="w-5 h-5 rounded text-accent-primary focus:ring-accent-primary" />
+                </label>
+                <label className="flex items-center justify-between cursor-pointer group">
+                  <span className="text-sm font-medium text-slate-600 dark:text-slate-300 group-hover:text-accent-primary transition-colors">Teks Latin</span>
+                  <input type="checkbox" checked={showLatin} onChange={onToggleLatin} className="w-5 h-5 rounded text-accent-primary focus:ring-accent-primary" />
+                </label>
+                <label className="flex items-center justify-between cursor-pointer group">
+                  <span className="text-sm font-medium text-slate-600 dark:text-slate-300 group-hover:text-accent-primary transition-colors">Terjemahan</span>
+                  <input type="checkbox" checked={showTranslation} onChange={onToggleTranslation} className="w-5 h-5 rounded text-accent-primary focus:ring-accent-primary" />
+                </label>
+              </div>
+
+              <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Audio Qari</h5>
+                <select 
+                  value={selectedReciter} 
+                  onChange={(e) => onReciterChange?.(parseInt(e.target.value, 10))}
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-xl focus:ring-accent-primary focus:border-accent-primary block p-3"
+                >
+                  {RECITERS.map(r => (
+                    <option key={r.id} value={r.id}>{r.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-};
+}, (prev, next) => {
+  // Custom equality check for React.memo to prevent re-rendering all 300 cards when parent state changes.
+  // We ignore function props since they are inline in SurahDetail.tsx and change every render.
+  return (
+    prev.verseNumber === next.verseNumber &&
+    prev.isPlaying === next.isPlaying &&
+    prev.isBookmarked === next.isBookmarked &&
+    prev.showTajweed === next.showTajweed &&
+    prev.showLatin === next.showLatin &&
+    prev.showTranslation === next.showTranslation &&
+    prev.selectedReciter === next.selectedReciter
+  );
+});

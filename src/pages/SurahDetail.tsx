@@ -31,6 +31,15 @@ export const SurahDetail: React.FC = () => {
   // Play audio when playingAyahNumber changes
   useEffect(() => {
     if (playingAyahNumber !== null && audioRef.current && surah) {
+      
+      // Auto-scroll to the playing verse
+      const el = document.getElementById(`ayah-${playingAyahNumber}`);
+      if (el) {
+        const yOffset = -120;
+        const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+
       const ayah = surah.ayat.find(a => a.verse_number === playingAyahNumber);
       if (ayah?.audio?.url) {
         const fullUrl = ayah.audio.url.startsWith('http') ? ayah.audio.url : `https://verses.quran.com/${ayah.audio.url}`;

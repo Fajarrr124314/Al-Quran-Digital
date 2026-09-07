@@ -85,17 +85,28 @@ export interface JadwalShalat {
   date: string;
 }
 
+let surahListCache: Surah[] | null = null;
+
 export const getSurahList = async (): Promise<Surah[]> => {
+  if (surahListCache) return surahListCache;
   try {
     const response = await axios.get(`${BASE_URL}/chapters?language=id`);
-    return response.data.chapters;
+    surahListCache = response.data.chapters;
+    return surahListCache;
   } catch (error) {
     console.error('Error fetching surah list:', error);
     throw error;
   }
 };
 
+const surahDetailCache = new Map<string, SurahDetail>();
+
 export const getSurahDetail = async (id: number, reciterId: number = 7): Promise<SurahDetail> => {
+  const cacheKey = `${id}-${reciterId}`;
+  if (surahDetailCache.has(cacheKey)) {
+    return surahDetailCache.get(cacheKey)!;
+  }
+
   try {
     // Fetch chapter info from Quran.com, verses from Quran.com, and latin from equran.id simultaneously
     const [chapterRes, versesRes, equranRes] = await Promise.all([
@@ -116,10 +127,13 @@ export const getSurahDetail = async (id: number, reciterId: number = 7): Promise
       };
     });
     
-    return {
+    const result = {
       ...chapter,
       ayat: mergedVerses,
     };
+    
+    surahDetailCache.set(cacheKey, result);
+    return result;
   } catch (error) {
     console.error(`Error fetching surah detail for ${id}:`, error);
     throw error;
