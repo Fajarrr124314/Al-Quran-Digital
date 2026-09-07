@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-accent-cyan: #0ea5e9;
+  --color-accent-gold: #fbbf24;
+  --color-accent-primary: #14b8a6; /* teal-500 */
+  --font-arabic: 'Amiri', 'Scheherazade New', serif;
+  --font-sans: 'Inter', 'Outfit', sans-serif;
+  
+  --animate-pulse-slow: pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-gradient-x: gradient-x 15s ease infinite;
+}
+
+@layer utilities {
+  @keyframes gradient-x {
+    0%, 100% {
+      background-size: 200% 200%;
+      background-position: left center;
+    }
+    50% {
+      background-size: 200% 200%;
+      background-position: right center;
+    }
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-800 font-sans antialiased selection:bg-accent-primary/30 selection:text-slate-900 transition-colors duration-500 min-h-screen relative;
+    background-image: radial-gradient(circle at top right, rgba(20, 184, 166, 0.05), transparent 40%),
+                      radial-gradient(circle at bottom left, rgba(14, 165, 233, 0.05), transparent 40%);
+  }
+  
+  .dark body {
+    @apply bg-slate-950 text-slate-200 selection:bg-accent-primary/50 selection:text-white;
+    background-image: radial-gradient(circle at top right, rgba(20, 184, 166, 0.15), transparent 50%),
+                      radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.15), transparent 50%),
+                      radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.05), transparent 60%);
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-slate-200/50 shadow-lg;
+  }
+  .dark .glass {
+    @apply bg-slate-800/40 border-slate-700/50 shadow-2xl;
+  }
+
+  .glass-hover {
+    @apply hover:bg-white/90 hover:border-accent-primary/40 hover:shadow-xl transition-all duration-300;
+  }
+  .dark .glass-hover {
+    @apply hover:bg-slate-800/80 hover:border-accent-primary/50;
+  }
+
+  .text-glow-primary {
+    text-shadow: 0 0 15px rgba(20, 184, 166, 0.4);
+  }
+  .dark .text-glow-primary {
+    text-shadow: 0 0 15px rgba(20, 184, 166, 0.6);
+  }
+
+  /* Tajweed Colors */
+  .tajweed-container tajweed {
+    transition: color 0.3s ease;
+  }
+  
+  /* Ghunnah (Nasal) */
+  tajweed.ghunnah { color: #f59e0b; }
+  .dark tajweed.ghunnah { color: #fbbf24; }
+  
+  /* Ikhfa (Hidden) */
+  tajweed.ikhfa { color: #10b981; }
+  .dark tajweed.ikhfa { color: #34d399; }
+  
+  /* Idgham (Merged) */
+  tajweed.idgham_shafawi, tajweed.idgham_mutajanisayn, tajweed.idgham_mutaqaribayn, tajweed.idgham_with_ghunnah, tajweed.idgham_without_ghunnah { color: #3b82f6; }
+  .dark tajweed.idgham_shafawi, .dark tajweed.idgham_mutajanisayn, .dark tajweed.idgham_mutaqaribayn, .dark tajweed.idgham_with_ghunnah, .dark tajweed.idgham_without_ghunnah { color: #60a5fa; }
+  
+  /* Iqlab (Converted) */
+  tajweed.iqlab { color: #8b5cf6; }
+  .dark tajweed.iqlab { color: #a78bfa; }
+  
+  /* Qalqalah (Echo) */
+  tajweed.qalaqah { color: #06b6d4; }
+  .dark tajweed.qalaqah { color: #22d3ee; }
+  
+  /* Madda (Prolongation) */
+  tajweed.madda_normal, tajweed.madda_permissible, tajweed.madda_necessary { color: #ec4899; }
+  .dark tajweed.madda_normal, .dark tajweed.madda_permissible, .dark tajweed.madda_necessary { color: #f472b6; }
+  
+  /* Unpronounced / Silent */
+  tajweed.ham_wasl, tajweed.laam_shamsiyah, tajweed.slnt { color: #94a3b8; }
+  .dark tajweed.ham_wasl, .dark tajweed.laam_shamsiyah, .dark tajweed.slnt { color: #64748b; }
+}
