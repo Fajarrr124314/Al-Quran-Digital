@@ -24,7 +24,7 @@ export const SurahDetail: React.FC = () => {
 
   // Settings state
   const [showSettings, setShowSettings] = useState(false);
-  const [showTajweed, setShowTajweed] = useState(true);
+  const [showTajweed, setShowTajweed] = useState(false);
   const [showLatin, setShowLatin] = useState(true);
   const [showTranslation, setShowTranslation] = useState(true);
   
