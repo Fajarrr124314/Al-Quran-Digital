@@ -1,9 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, List } from 'lucide-react';
+import { ChevronLeft, ChevronRight, List, X } from 'lucide-react';
 import { getSurahDetail } from '../services/api';
 import type { SurahDetail as SurahDetailType } from '../services/api';
 import { AyahCard } from '../components/AyahCard';
+
+const RECITERS = [
+  { id: 7, name: 'Mishary Rashid Alafasy' },
+  { id: 2, name: 'AbdulBaset AbdulSamad' },
+  { id: 3, name: 'Abdur-Rahman as-Sudais' },
+  { id: 4, name: 'Abu Bakr al-Shatri' },
+  { id: 5, name: 'Hani ar-Rifai' },
+];
 
 export const SurahDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,6 +23,7 @@ export const SurahDetail: React.FC = () => {
   const [lastReadAyah, setLastReadAyah] = useState<number | null>(null);
 
   // Settings state
+  const [showSettings, setShowSettings] = useState(false);
   const [showTajweed, setShowTajweed] = useState(true);
   const [showLatin, setShowLatin] = useState(true);
   const [showTranslation, setShowTranslation] = useState(true);
@@ -24,8 +33,9 @@ export const SurahDetail: React.FC = () => {
     return saved ? parseInt(saved, 10) : 7;
   });
 
-  // Audio Playback state
+  // Audio & Selection state
   const [playingAyahNumber, setPlayingAyahNumber] = useState<number | null>(null);
+  const [selectedAyahNumber, setSelectedAyahNumber] = useState<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Play audio when playingAyahNumber changes
@@ -58,6 +68,7 @@ export const SurahDetail: React.FC = () => {
     if (!surah) return;
     if (playingAyahNumber !== null && playingAyahNumber < surah.verses_count) {
       setPlayingAyahNumber(playingAyahNumber + 1);
+      setSelectedAyahNumber(playingAyahNumber + 1);
     } else {
       setPlayingAyahNumber(null);
     }
@@ -70,15 +81,16 @@ export const SurahDetail: React.FC = () => {
     } else {
       // Play
       setPlayingAyahNumber(ayahNumber);
+      setSelectedAyahNumber(ayahNumber);
     }
   };
 
   useEffect(() => {
     const fetchSurahDetail = async () => {
       if (!id) return;
-      setLoading(true);
+      if (!surah) setLoading(true); // Only hard load on first visit
       setError(null);
-      setPlayingAyahNumber(null); // Reset audio on surah/reciter change
+      // We don't reset selectedAyahNumber so scroll position stays visually selected
       
       try {
         const data = await getSurahDetail(parseInt(id, 10), selectedReciter);
@@ -183,17 +195,12 @@ export const SurahDetail: React.FC = () => {
               showLatin={showLatin}
               showTranslation={showTranslation}
               isPlaying={playingAyahNumber === ayah.verse_number}
+              isActive={playingAyahNumber === ayah.verse_number || selectedAyahNumber === ayah.verse_number}
+              onCardClick={() => setSelectedAyahNumber(ayah.verse_number)}
               onPlayToggle={() => handlePlayToggle(ayah.verse_number)}
               hasAudio={!!ayah.audio?.url}
               totalVerses={surah.verses_count}
-              onToggleTajweed={() => setShowTajweed(!showTajweed)}
-              onToggleLatin={() => setShowLatin(!showLatin)}
-              onToggleTranslation={() => setShowTranslation(!showTranslation)}
-              selectedReciter={selectedReciter}
-              onReciterChange={(id) => {
-                setSelectedReciter(id);
-                localStorage.setItem('selectedReciter', id.toString());
-              }}
+              onOpenSettings={() => setShowSettings(true)}
             />
           );
         })}
@@ -230,6 +237,59 @@ export const SurahDetail: React.FC = () => {
           <div></div>
         )}
       </div>
+
+      {/* Global Settings Modal */}
+      {showSettings && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onClick={() => setShowSettings(false)}></div>
+          
+          <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl shadow-2xl relative z-10 p-5 border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200 text-left">
+            <div className="flex items-center justify-between mb-5 border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h4 className="text-base font-bold text-slate-800 dark:text-white">Pengaturan Tampilan</h4>
+              <button 
+                onClick={() => setShowSettings(false)}
+                className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <label className="flex items-center justify-between cursor-pointer group">
+                  <span className="text-sm font-medium text-slate-600 dark:text-slate-300 group-hover:text-accent-primary transition-colors">Tajwid Berwarna</span>
+                  <input type="checkbox" checked={showTajweed} onChange={() => setShowTajweed(!showTajweed)} className="w-5 h-5 rounded text-accent-primary focus:ring-accent-primary" />
+                </label>
+                <label className="flex items-center justify-between cursor-pointer group">
+                  <span className="text-sm font-medium text-slate-600 dark:text-slate-300 group-hover:text-accent-primary transition-colors">Teks Latin</span>
+                  <input type="checkbox" checked={showLatin} onChange={() => setShowLatin(!showLatin)} className="w-5 h-5 rounded text-accent-primary focus:ring-accent-primary" />
+                </label>
+                <label className="flex items-center justify-between cursor-pointer group">
+                  <span className="text-sm font-medium text-slate-600 dark:text-slate-300 group-hover:text-accent-primary transition-colors">Terjemahan</span>
+                  <input type="checkbox" checked={showTranslation} onChange={() => setShowTranslation(!showTranslation)} className="w-5 h-5 rounded text-accent-primary focus:ring-accent-primary" />
+                </label>
+              </div>
+
+              <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Audio Qari</h5>
+                <select 
+                  value={selectedReciter} 
+                  onChange={(e) => {
+                    const newId = parseInt(e.target.value, 10);
+                    setSelectedReciter(newId);
+                    localStorage.setItem('selectedReciter', newId.toString());
+                  }}
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-xl focus:ring-accent-primary focus:border-accent-primary block p-3"
+                >
+                  {RECITERS.map(r => (
+                    <option key={r.id} value={r.id}>{r.name}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

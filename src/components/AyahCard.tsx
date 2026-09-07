@@ -1,14 +1,8 @@
 import React from 'react';
-import { Play, Pause, Bookmark, Share2, Settings2, X } from 'lucide-react';
+import { Play, Pause, Bookmark, Share2, Settings2 } from 'lucide-react';
 import clsx from 'clsx';
 
-const RECITERS = [
-  { id: 7, name: 'Mishary Rashid Alafasy' },
-  { id: 2, name: 'AbdulBaset AbdulSamad' },
-  { id: 3, name: 'Abdur-Rahman as-Sudais' },
-  { id: 4, name: 'Abu Bakr al-Shatri' },
-  { id: 5, name: 'Hani ar-Rifai' },
-];
+// Removed unused RECITERS
 
 interface AyahCardProps {
   verseNumber: number;
@@ -26,14 +20,14 @@ interface AyahCardProps {
   isPlaying?: boolean;
   onPlayToggle?: () => void;
   hasAudio?: boolean;
+  
+  // Selection
+  isActive?: boolean;
+  onCardClick?: () => void;
 
   // Settings & Navigation
   totalVerses?: number;
-  onToggleTajweed?: () => void;
-  onToggleLatin?: () => void;
-  onToggleTranslation?: () => void;
-  selectedReciter?: number;
-  onReciterChange?: (id: number) => void;
+  onOpenSettings?: () => void;
 }
 
 export const AyahCard = React.memo<AyahCardProps>(({
@@ -50,15 +44,11 @@ export const AyahCard = React.memo<AyahCardProps>(({
   isPlaying = false,
   onPlayToggle,
   hasAudio = true,
+  isActive = false,
+  onCardClick,
   totalVerses,
-  onToggleTajweed,
-  onToggleLatin,
-  onToggleTranslation,
-  selectedReciter,
-  onReciterChange
+  onOpenSettings
 }) => {
-  const [showSettings, setShowSettings] = React.useState(false);
-
   const handleShare = async () => {
     // Strip HTML tags from tajweed for sharing
     const cleanText = textUthmaniTajweed.replace(/<[^>]*>?/gm, '');
@@ -87,12 +77,11 @@ export const AyahCard = React.memo<AyahCardProps>(({
         // Don't trigger if user is just selecting text
         const selection = window.getSelection();
         if (selection && selection.toString().length > 0) return;
-        if (onPlayToggle) onPlayToggle();
+        if (onCardClick) onCardClick();
       }}
       className={clsx(
-        "glass rounded-xl p-6 md:p-8 mb-6 relative group transition-all duration-300 cursor-pointer",
-        showSettings ? "z-50" : "z-10",
-        isPlaying 
+        "glass rounded-xl p-6 md:p-8 mb-6 relative group transition-all duration-300 cursor-pointer z-10",
+        isActive 
           ? "ring-2 ring-accent-primary dark:ring-white shadow-xl bg-slate-50/80 dark:bg-slate-800/80 md:scale-[1.02] border-transparent" 
           : "border border-slate-200/50 dark:border-slate-700/50 hover:border-accent-primary/30"
       )}
@@ -204,7 +193,7 @@ export const AyahCard = React.memo<AyahCardProps>(({
             {/* Settings Button */}
             <div>
               <button 
-                onClick={(e) => { e.stopPropagation(); setShowSettings(true); }}
+                onClick={(e) => { e.stopPropagation(); if (onOpenSettings) onOpenSettings(); }}
                 className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all shadow-sm text-xs font-medium"
               >
                 <Settings2 className="w-3.5 h-3.5" />
@@ -214,55 +203,6 @@ export const AyahCard = React.memo<AyahCardProps>(({
           </div>
         </div>
       </div>
-
-      {/* Settings Modal */}
-      {showSettings && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4" onClick={(e) => e.stopPropagation()}>
-          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onClick={() => setShowSettings(false)}></div>
-          
-          <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl shadow-2xl relative z-10 p-5 border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200 text-left">
-            <div className="flex items-center justify-between mb-5 border-b border-slate-100 dark:border-slate-800 pb-3">
-              <h4 className="text-base font-bold text-slate-800 dark:text-white">Pengaturan Tampilan</h4>
-              <button 
-                onClick={() => setShowSettings(false)}
-                className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <label className="flex items-center justify-between cursor-pointer group">
-                  <span className="text-sm font-medium text-slate-600 dark:text-slate-300 group-hover:text-accent-primary transition-colors">Tajwid Berwarna</span>
-                  <input type="checkbox" checked={showTajweed} onChange={onToggleTajweed} className="w-5 h-5 rounded text-accent-primary focus:ring-accent-primary" />
-                </label>
-                <label className="flex items-center justify-between cursor-pointer group">
-                  <span className="text-sm font-medium text-slate-600 dark:text-slate-300 group-hover:text-accent-primary transition-colors">Teks Latin</span>
-                  <input type="checkbox" checked={showLatin} onChange={onToggleLatin} className="w-5 h-5 rounded text-accent-primary focus:ring-accent-primary" />
-                </label>
-                <label className="flex items-center justify-between cursor-pointer group">
-                  <span className="text-sm font-medium text-slate-600 dark:text-slate-300 group-hover:text-accent-primary transition-colors">Terjemahan</span>
-                  <input type="checkbox" checked={showTranslation} onChange={onToggleTranslation} className="w-5 h-5 rounded text-accent-primary focus:ring-accent-primary" />
-                </label>
-              </div>
-
-              <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
-                <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Audio Qari</h5>
-                <select 
-                  value={selectedReciter} 
-                  onChange={(e) => onReciterChange?.(parseInt(e.target.value, 10))}
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-xl focus:ring-accent-primary focus:border-accent-primary block p-3"
-                >
-                  {RECITERS.map(r => (
-                    <option key={r.id} value={r.id}>{r.name}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }, (prev, next) => {
@@ -271,10 +211,11 @@ export const AyahCard = React.memo<AyahCardProps>(({
   return (
     prev.verseNumber === next.verseNumber &&
     prev.isPlaying === next.isPlaying &&
+    prev.isActive === next.isActive &&
     prev.isBookmarked === next.isBookmarked &&
+    prev.totalVerses === next.totalVerses &&
     prev.showTajweed === next.showTajweed &&
     prev.showLatin === next.showLatin &&
-    prev.showTranslation === next.showTranslation &&
-    prev.selectedReciter === next.selectedReciter
+    prev.showTranslation === next.showTranslation
   );
 });
