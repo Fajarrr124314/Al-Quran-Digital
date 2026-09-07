@@ -54,6 +54,92 @@ export const LandingPage: React.FC = () => {
         <DailyVerse />
       </div>
 
+      {/* Fitur Unggulan (Bento Grid Layout) */}
+      <div className="mb-20">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-3">Fitur Unggulan</h2>
+          <p className="text-slate-600 dark:text-slate-400">Dirancang khusus untuk memberikan kenyamanan ibadah yang maksimal.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          {/* Audio Murottal (Large Card) */}
+          <div className="md:col-span-2 glass rounded-3xl p-8 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-accent-primary/10 blur-3xl rounded-full transition-transform group-hover:scale-110"></div>
+            <div className="relative z-10 h-full flex flex-col justify-between">
+              <div>
+                <div className="w-12 h-12 rounded-xl bg-accent-primary/20 text-accent-primary flex items-center justify-center mb-6">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" /></svg>
+                </div>
+                <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-3">Audio Murottal Global</h3>
+                <p className="text-slate-600 dark:text-slate-400 max-w-md leading-relaxed">
+                  Dengarkan lantunan suci dari Qari-Qari terbaik dunia. Dilengkapi dengan fitur pemutaran per ayat yang memudahkan Anda untuk menghafal (Tahfidz) dan memperbaiki bacaan (Tahsin).
+                </p>
+              </div>
+              
+              {/* Fake Audio Player UI */}
+              <div className="mt-8 bg-white/50 dark:bg-slate-900/50 rounded-2xl p-4 flex items-center gap-4 border border-slate-200 dark:border-slate-800">
+                <div className="w-10 h-10 rounded-full bg-accent-primary flex items-center justify-center text-white shrink-0">
+                  <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" /></svg>
+                </div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div className="h-full bg-accent-primary w-1/3"></div>
+                  </div>
+                  <div className="flex gap-1">
+                    {[...Array(12)].map((_, i) => (
+                      <div key={i} className={`h-${Math.floor(Math.random() * 4) + 1} w-1 bg-accent-primary/40 rounded-full`}></div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Mode Gelap (Small Card) */}
+          <div className="glass rounded-3xl p-8 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-slate-800/10 dark:bg-white/10 blur-2xl rounded-full transition-transform group-hover:scale-110"></div>
+            <div className="relative z-10">
+              <div className="w-12 h-12 rounded-xl bg-slate-800 dark:bg-white text-white dark:text-slate-800 flex items-center justify-center mb-6 shadow-lg">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+              </div>
+              <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-3">Mode Malam Pintar</h3>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                Menyesuaikan secara otomatis dengan pengaturan perangkat Anda. Sangat nyaman di mata untuk membaca di malam hari atau kondisi minim cahaya.
+              </p>
+            </div>
+          </div>
+
+          {/* Tajwid & UI (Small Card) */}
+          <div className="glass rounded-3xl p-8 relative overflow-hidden group">
+            <div className="relative z-10">
+              <div className="w-12 h-12 rounded-xl bg-teal-100 dark:bg-teal-900/30 text-teal-500 flex items-center justify-center mb-6">
+                <BookOpen className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-3">Teks Arab Nyaman</h3>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                Tersedia khat Utsmani yang jernih dan tajam di segala resolusi layar. Ukuran huruf dapat Anda sesuaikan langsung melalui menu pengaturan cerdas.
+              </p>
+            </div>
+          </div>
+
+          {/* Bebas Iklan (Medium Card) */}
+          <div className="md:col-span-2 glass border border-green-500/20 dark:border-green-400/20 rounded-3xl p-8 relative overflow-hidden flex flex-col md:flex-row items-center gap-6">
+            <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-transparent z-0"></div>
+            <div className="w-20 h-20 shrink-0 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-600 p-1 shadow-lg shadow-green-500/30 relative z-10">
+              <div className="w-full h-full rounded-xl bg-white dark:bg-slate-900 flex items-center justify-center">
+                <svg className="w-10 h-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+              </div>
+            </div>
+            <div className="relative z-10 text-center md:text-left">
+              <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-2">100% Gratis & Tanpa Iklan</h3>
+              <p className="text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">
+                Kekhusyukan Anda adalah prioritas utama kami. Tidak ada *banner* iklan yang mengganggu, tidak ada *pop-up*, dan murni dibuat untuk meraih ridha Allah semata.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Value Proposition / Keutamaan */}
       <div className="mb-20">
         <div className="text-center mb-10">
