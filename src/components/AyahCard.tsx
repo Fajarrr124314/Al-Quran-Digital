@@ -1,6 +1,14 @@
 import React from 'react';
-import { Play, Pause, Bookmark, Share2 } from 'lucide-react';
+import { Play, Pause, Bookmark, Share2, Settings2 } from 'lucide-react';
 import clsx from 'clsx';
+
+const RECITERS = [
+  { id: 7, name: 'Mishary Rashid Alafasy' },
+  { id: 2, name: 'AbdulBaset AbdulSamad' },
+  { id: 3, name: 'Abdur-Rahman as-Sudais' },
+  { id: 4, name: 'Abu Bakr al-Shatri' },
+  { id: 5, name: 'Hani ar-Rifai' },
+];
 
 interface AyahCardProps {
   verseNumber: number;
@@ -18,6 +26,14 @@ interface AyahCardProps {
   isPlaying?: boolean;
   onPlayToggle?: () => void;
   hasAudio?: boolean;
+
+  // Settings & Navigation
+  totalVerses?: number;
+  onToggleTajweed?: () => void;
+  onToggleLatin?: () => void;
+  onToggleTranslation?: () => void;
+  selectedReciter?: number;
+  onReciterChange?: (id: number) => void;
 }
 
 export const AyahCard: React.FC<AyahCardProps> = ({
@@ -33,8 +49,32 @@ export const AyahCard: React.FC<AyahCardProps> = ({
   showTranslation = true,
   isPlaying = false,
   onPlayToggle,
-  hasAudio = true
+  hasAudio = true,
+  totalVerses,
+  onToggleTajweed,
+  onToggleLatin,
+  onToggleTranslation,
+  selectedReciter,
+  onReciterChange
 }) => {
+  const [showSettings, setShowSettings] = React.useState(false);
+  const settingsRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
+        setShowSettings(false);
+      }
+    };
+
+    if (showSettings) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showSettings]);
+
   const handleShare = async () => {
     // Strip HTML tags from tajweed for sharing
     const cleanText = textUthmaniTajweed.replace(/<[^>]*>?/gm, '');
@@ -57,7 +97,10 @@ export const AyahCard: React.FC<AyahCardProps> = ({
   };
 
   return (
-    <div id={`ayah-${verseNumber}`} className="glass rounded-xl p-6 md:p-8 mb-6 relative group transition-all duration-300 hover:border-accent-primary/30">
+    <div id={`ayah-${verseNumber}`} className={clsx(
+      "glass rounded-xl p-6 md:p-8 mb-6 relative group transition-all duration-300 hover:border-accent-primary/30",
+      showSettings ? "z-50" : "z-10"
+    )}>
       <div className="flex flex-col md:flex-row justify-between items-start gap-6">
         
         {/* Left Side: Number and Actions */}
@@ -100,7 +143,7 @@ export const AyahCard: React.FC<AyahCardProps> = ({
         </div>
 
         {/* Right Side: Text Content */}
-        <div className="flex-1 w-full overflow-hidden">
+        <div className="flex-1 w-full min-w-0">
           <div className={clsx("mb-8", showTajweed && "tajweed-container")}>
             {showTajweed ? (
               <div 
@@ -130,6 +173,84 @@ export const AyahCard: React.FC<AyahCardProps> = ({
                 dangerouslySetInnerHTML={{ __html: translationIdn }}
               />
             )}
+          </div>
+          
+          {/* Settings & Jump Actions */}
+          <div className="mt-6 flex flex-wrap items-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+            {/* Jump Dropdown */}
+            {totalVerses && (
+              <div className="inline-flex items-center gap-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-full px-4 py-1.5 shadow-sm transition-all hover:bg-slate-100 dark:hover:bg-slate-700">
+                <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Loncat:</span>
+                <select
+                  className="bg-transparent border-none text-accent-primary font-bold focus:ring-0 cursor-pointer outline-none text-xs appearance-none pr-1"
+                  onChange={(e) => {
+                    const ayahId = `ayah-${e.target.value}`;
+                    const el = document.getElementById(ayahId);
+                    if (el) {
+                      const yOffset = -120; // Offset for sticky navbar
+                      const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                      window.scrollTo({ top: y, behavior: 'smooth' });
+                      e.target.value = ""; // Reset after jumping
+                    }
+                  }}
+                  defaultValue=""
+                >
+                  <option value="" disabled>Pilih Ayat...</option>
+                  {Array.from({ length: totalVerses }, (_, i) => i + 1).map(num => (
+                    <option key={num} value={num}>
+                      Ayat {num}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            
+            {/* Settings Button */}
+            <div className="relative" ref={settingsRef}>
+              <button 
+                onClick={() => setShowSettings(!showSettings)}
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all shadow-sm text-xs font-medium"
+              >
+                <Settings2 className="w-3.5 h-3.5" />
+                <span>Pengaturan</span>
+              </button>
+              
+              {showSettings && (
+                <div className="absolute left-0 top-full mt-2 w-56 sm:w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl p-4 z-50 text-left">
+                  <h4 className="text-sm font-semibold text-slate-800 dark:text-white mb-3 border-b border-slate-100 dark:border-slate-800 pb-2">Pengaturan Tampilan</h4>
+                  
+                  <div className="space-y-4">
+                    <div className="space-y-3">
+                      <label className="flex items-center justify-between cursor-pointer group">
+                        <span className="text-xs text-slate-600 dark:text-slate-300 group-hover:text-accent-primary transition-colors">Tajwid Berwarna</span>
+                        <input type="checkbox" checked={showTajweed} onChange={onToggleTajweed} className="w-4 h-4 rounded text-accent-primary focus:ring-accent-primary" />
+                      </label>
+                      <label className="flex items-center justify-between cursor-pointer group">
+                        <span className="text-xs text-slate-600 dark:text-slate-300 group-hover:text-accent-primary transition-colors">Teks Latin</span>
+                        <input type="checkbox" checked={showLatin} onChange={onToggleLatin} className="w-4 h-4 rounded text-accent-primary focus:ring-accent-primary" />
+                      </label>
+                      <label className="flex items-center justify-between cursor-pointer group">
+                        <span className="text-xs text-slate-600 dark:text-slate-300 group-hover:text-accent-primary transition-colors">Terjemahan</span>
+                        <input type="checkbox" checked={showTranslation} onChange={onToggleTranslation} className="w-4 h-4 rounded text-accent-primary focus:ring-accent-primary" />
+                      </label>
+                    </div>
+
+                    <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                      <h5 className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Audio Qari</h5>
+                      <select 
+                        value={selectedReciter} 
+                        onChange={(e) => onReciterChange?.(parseInt(e.target.value, 10))}
+                        className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs rounded-lg focus:ring-accent-primary focus:border-accent-primary block p-2"
+                      >
+                        {RECITERS.map(r => (
+                          <option key={r.id} value={r.id}>{r.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

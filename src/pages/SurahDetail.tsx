@@ -164,84 +164,6 @@ export const SurahDetail: React.FC = () => {
               بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
             </p>
           )}
-
-          {/* Jump to Ayah Feature */}
-          <div className="mt-6 flex justify-center">
-            <div className="inline-flex items-center gap-2 bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-full px-5 py-2 shadow-sm backdrop-blur-sm transition-all hover:bg-white dark:hover:bg-slate-700/80">
-              <span className="text-sm font-medium text-slate-500 dark:text-slate-400">Loncat:</span>
-              <select
-                className="bg-transparent border-none text-accent-primary font-bold focus:ring-0 cursor-pointer outline-none text-sm appearance-none pr-2"
-                onChange={(e) => {
-                  const ayahId = `ayah-${e.target.value}`;
-                  const el = document.getElementById(ayahId);
-                  if (el) {
-                    const yOffset = -120; // Offset for sticky navbar
-                    const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                    window.scrollTo({ top: y, behavior: 'smooth' });
-                    e.target.value = ""; // Reset after jumping
-                  }
-                }}
-                defaultValue=""
-              >
-                <option value="" disabled>Pilih Ayat...</option>
-                {surah.ayat.map(a => (
-                  <option key={a.verse_number} value={a.verse_number}>
-                    Ayat {a.verse_number}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Settings Button */}
-          <div className="absolute top-6 right-6">
-            <div className="relative">
-              <button 
-                onClick={() => setShowSettings(!showSettings)}
-                className="p-2.5 rounded-xl bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all shadow-sm"
-                title="Pengaturan Tampilan"
-              >
-                <Settings2 className="w-5 h-5" />
-              </button>
-              
-              {showSettings && (
-                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl p-4 z-50 text-left">
-                  <h4 className="text-sm font-semibold text-slate-800 dark:text-white mb-3 border-b border-slate-100 dark:border-slate-800 pb-2">Pengaturan</h4>
-                  
-                  <div className="space-y-4">
-                    <div className="space-y-3">
-                      <h5 className="text-xs font-medium text-slate-400 uppercase tracking-wider">Tampilan Bacaan</h5>
-                      <label className="flex items-center justify-between cursor-pointer">
-                        <span className="text-sm text-slate-600 dark:text-slate-300">Tajwid Berwarna</span>
-                        <input type="checkbox" checked={showTajweed} onChange={() => setShowTajweed(!showTajweed)} className="w-4 h-4 rounded text-accent-primary focus:ring-accent-primary" />
-                      </label>
-                      <label className="flex items-center justify-between cursor-pointer">
-                        <span className="text-sm text-slate-600 dark:text-slate-300">Teks Latin</span>
-                        <input type="checkbox" checked={showLatin} onChange={() => setShowLatin(!showLatin)} className="w-4 h-4 rounded text-accent-primary focus:ring-accent-primary" />
-                      </label>
-                      <label className="flex items-center justify-between cursor-pointer">
-                        <span className="text-sm text-slate-600 dark:text-slate-300">Terjemahan</span>
-                        <input type="checkbox" checked={showTranslation} onChange={() => setShowTranslation(!showTranslation)} className="w-4 h-4 rounded text-accent-primary focus:ring-accent-primary" />
-                      </label>
-                    </div>
-
-                    <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-                      <h5 className="text-xs font-medium text-slate-400 uppercase tracking-wider">Audio Qari</h5>
-                      <select 
-                        value={selectedReciter} 
-                        onChange={handleReciterChange}
-                        className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm rounded-lg focus:ring-accent-primary focus:border-accent-primary block p-2.5"
-                      >
-                        {RECITERS.map(r => (
-                          <option key={r.id} value={r.id}>{r.name}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
       </div>
       
@@ -269,6 +191,15 @@ export const SurahDetail: React.FC = () => {
               isPlaying={playingAyahNumber === ayah.verse_number}
               onPlayToggle={() => handlePlayToggle(ayah.verse_number)}
               hasAudio={!!ayah.audio?.url}
+              totalVerses={surah.verses_count}
+              onToggleTajweed={() => setShowTajweed(!showTajweed)}
+              onToggleLatin={() => setShowLatin(!showLatin)}
+              onToggleTranslation={() => setShowTranslation(!showTranslation)}
+              selectedReciter={selectedReciter}
+              onReciterChange={(id) => {
+                setSelectedReciter(id);
+                localStorage.setItem('selectedReciter', id.toString());
+              }}
             />
           );
         })}
