@@ -112,6 +112,42 @@ export const SurahDetail: React.FC = () => {
     }
   };
 
+  // Auto-scroll to last read on mount
+  useEffect(() => {
+    if (surah) {
+      try {
+        const lastReadRaw = localStorage.getItem('lastRead');
+        if (lastReadRaw) {
+          const lastRead = JSON.parse(lastReadRaw);
+          if (lastRead.surahId === surah.id && selectedAyahNumber === null) {
+            // Give the DOM a tiny bit of time to render all AyahCards
+            setTimeout(() => {
+              const el = document.getElementById(`ayah-${lastRead.verseNumber}`);
+              if (el) {
+                const yOffset = -120;
+                const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+                setSelectedAyahNumber(lastRead.verseNumber);
+              }
+            }, 500);
+          }
+        }
+      } catch (e) {
+        console.error("Error reading lastRead", e);
+      }
+    }
+  }, [surah]); // Run once when surah loads
+
+  useEffect(() => {
+    if (surah && selectedAyahNumber !== null) {
+      localStorage.setItem('lastRead', JSON.stringify({
+        surahId: surah.id,
+        surahName: surah.name_simple,
+        verseNumber: selectedAyahNumber
+      }));
+    }
+  }, [selectedAyahNumber, surah]);
+
   const handlePlayToggle = (ayahNumber: number) => {
     if (playingAyahNumber === ayahNumber) {
       // Pause

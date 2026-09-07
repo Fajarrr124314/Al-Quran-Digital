@@ -1,6 +1,8 @@
 import React from 'react';
 import { DailyVerse } from '../components/DailyVerse';
 import { FeatureMenu } from '../components/FeatureMenu';
+import { LastReadCard } from '../components/LastReadCard';
+import { PrayerCountdown } from '../components/PrayerCountdown';
 import { BookOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -8,7 +10,7 @@ export const LandingPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16">
       {/* Hero Section */}
-      <div className="text-center max-w-4xl mx-auto mb-20 relative pt-10">
+      <div className="text-center max-w-4xl mx-auto mb-12 relative pt-10">
         {/* Animated Background Blobs */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-gradient-to-tr from-accent-primary/20 via-blue-500/10 to-purple-500/20 blur-[100px] -z-10 rounded-full animate-pulse-slow"></div>
 
@@ -17,6 +19,9 @@ export const LandingPage: React.FC = () => {
             Bismillahir-rahmanir-rahim
           </span>
         </div>
+        
+        {/* Prayer Countdown Widget */}
+        <PrayerCountdown />
         
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight">
           <span className="text-slate-800 dark:text-white transition-colors">Tenangkan Hati dengan</span> <br className="hidden md:block" />
@@ -37,6 +42,10 @@ export const LandingPage: React.FC = () => {
             Mulai Membaca
           </Link>
         </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto">
+        <LastReadCard />
       </div>
 
       <FeatureMenu />
