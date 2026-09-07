@@ -4,15 +4,38 @@ import { Send, User, Mail, MessageSquare } from 'lucide-react';
 export const AboutPage: React.FC = () => {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate sending form
-    setTimeout(() => {
-      setIsSubmitted(true);
-      setFormData({ name: '', email: '', message: '' });
-      setTimeout(() => setIsSubmitted(false), 5000);
-    }, 1000);
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: "aa142c97-8f2d-4f05-9e73-d3a1469eca00",
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+        }),
+      });
+      
+      const result = await response.json();
+      if (result.success) {
+        setIsSubmitted(true);
+        setFormData({ name: '', email: '', message: '' });
+        setTimeout(() => setIsSubmitted(false), 5000);
+      }
+    } catch (error) {
+      console.error("Error submitting form", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -34,17 +57,12 @@ export const AboutPage: React.FC = () => {
           <p className="text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed mb-6">
             Aplikasi Al-Qur'an Wahyu Digital ini dibangun dengan tujuan untuk memudahkan umat Muslim dalam membaca, mempelajari, dan mendengarkan ayat-ayat suci Al-Qur'an di mana saja. Dikembangkan menggunakan teknologi web modern untuk memastikan pengalaman yang cepat, ringan, dan responsif.
           </p>
-          
-          <div className="inline-block bg-accent-primary/5 dark:bg-accent-primary/10 border border-accent-primary/20 rounded-2xl p-4 text-sm text-slate-600 dark:text-slate-300">
-            <span className="block font-semibold text-accent-primary mb-1">Atribusi API</span>
-            Data Al-Qur'an & Terjemahan (Standar Kemenag RI) pada aplikasi ini sepenuhnya disediakan melalui layanan API Publik oleh <strong>equran.id</strong>. Kami mengucapkan banyak terima kasih atas kontribusi mereka bagi umat.
-          </div>
         </div>
       </div>
 
       {/* Privacy Policy Section */}
       <div className="glass rounded-3xl p-8 md:p-12 mb-12 relative overflow-hidden">
-        <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-6">Kebijakan Privasi</h2>
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-6">Kebijakan Privasi & Sumber Data</h2>
         <div className="space-y-4 text-slate-600 dark:text-slate-300 leading-relaxed text-sm md:text-base">
           <p>
             Kami sangat menghargai dan melindungi privasi Anda. Aplikasi <strong>Al-Qur'an Wahyu Digital</strong> dibangun dengan prinsip keamanan dan kenyamanan pengguna.
@@ -52,7 +70,13 @@ export const AboutPage: React.FC = () => {
           <ul className="list-disc list-outside space-y-2 ml-5">
             <li><strong>Data Lokal:</strong> Pengaturan aplikasi (seperti mode gelap, pilihan Qari, dan penanda bacaan) disimpan murni secara lokal di perangkat Anda (<em>Local Storage</em>). Kami tidak memanen, mengirim, atau menyimpan data tersebut ke server eksternal mana pun.</li>
             <li><strong>Bebas Pelacakan:</strong> Aplikasi ini 100% bebas dari iklan (<em>ads-free</em>) dan tidak menggunakan perangkat lunak pelacakan pihak ketiga (<em>trackers</em>) yang mengancam privasi Anda.</li>
-            <li><strong>Transparansi:</strong> Segala komunikasi data hanya terjadi antara perangkat Anda dan API Publik terpercaya (seperti equran.id dan myquran.com) secara langsung untuk mengambil ayat dan jadwal shalat.</li>
+            <li><strong>Sumber Data Terpercaya:</strong> Transparansi komunikasi data hanya terjadi antara perangkat Anda dan penyedia API Publik terpercaya:
+              <ul className="list-circle list-inside mt-2 ml-2 space-y-1 text-slate-500 dark:text-slate-400">
+                <li><a href="https://equran.id" target="_blank" rel="noreferrer" className="text-accent-primary hover:underline">equran.id</a>: Terjemahan Kemenag RI dan Teks Latin.</li>
+                <li><a href="https://quran.com" target="_blank" rel="noreferrer" className="text-accent-primary hover:underline">Quran.com</a>: Teks Arab Utsmani, Audio Qari internasional, & Tajwid.</li>
+                <li><a href="https://myquran.com" target="_blank" rel="noreferrer" className="text-accent-primary hover:underline">myquran.com</a>: Data Jadwal Shalat akurat seluruh Indonesia.</li>
+              </ul>
+            </li>
           </ul>
         </div>
       </div>
@@ -81,6 +105,7 @@ export const AboutPage: React.FC = () => {
                 </label>
                 <input 
                   type="text" 
+                  name="name"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
@@ -94,6 +119,7 @@ export const AboutPage: React.FC = () => {
                 </label>
                 <input 
                   type="email" 
+                  name="email"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
@@ -108,6 +134,7 @@ export const AboutPage: React.FC = () => {
                 <MessageSquare className="w-4 h-4 text-accent-primary" /> Pesan / Saran
               </label>
               <textarea 
+                name="message"
                 required
                 rows={5}
                 value={formData.message}
@@ -119,9 +146,14 @@ export const AboutPage: React.FC = () => {
             
             <button 
               type="submit"
-              className="w-full py-4 rounded-xl bg-gradient-to-r from-accent-primary to-teal-500 text-white font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
+              disabled={isSubmitting}
+              className="w-full py-4 rounded-xl bg-gradient-to-r from-accent-primary to-teal-500 text-white font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-70 disabled:hover:translate-y-0"
             >
-              <Send className="w-5 h-5" /> Kirim Pesan
+              {isSubmitting ? (
+                <>MENGIRIM...</>
+              ) : (
+                <><Send className="w-5 h-5" /> Kirim Pesan</>
+              )}
             </button>
           </form>
         )}

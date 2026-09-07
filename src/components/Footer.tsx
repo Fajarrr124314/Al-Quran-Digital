@@ -17,9 +17,6 @@ export const Footer: React.FC = () => {
           <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1">
             Dibuat dengan <Heart className="w-4 h-4 text-red-500 fill-red-500/20" /> untuk umat Islam
           </p>
-          <p className="text-xs text-slate-400 dark:text-slate-500 text-center md:text-left">
-            Sumber Data API: <a href="https://equran.id" target="_blank" rel="noreferrer" className="text-accent-primary hover:underline font-medium">equran.id</a>, <a href="https://quran.com" target="_blank" rel="noreferrer" className="text-accent-primary hover:underline font-medium">quran.com</a> & <a href="https://myquran.com" target="_blank" rel="noreferrer" className="text-accent-primary hover:underline font-medium">myquran.com</a>
-          </p>
         </div>
         
       </div>
