@@ -111,7 +111,7 @@ export const getSurahDetail = async (id: number, reciterId: number = 7): Promise
     // Fetch chapter info from Quran.com, verses from Quran.com, and latin from equran.id simultaneously
     const [chapterRes, versesRes, equranRes] = await Promise.all([
       axios.get(`${BASE_URL}/chapters/${id}?language=id`),
-      axios.get(`${BASE_URL}/verses/by_chapter/${id}?language=id&words=false&translations=33,57&fields=text_uthmani,text_uthmani_tajweed&audio=${reciterId}&per_page=300`),
+      axios.get(`${BASE_URL}/verses/by_chapter/${id}?language=id&words=false&translations=33&fields=text_uthmani,text_uthmani_tajweed&audio=${reciterId}&per_page=300`),
       axios.get(`https://equran.id/api/v2/surat/${id}`)
     ]);
 
