@@ -37,6 +37,44 @@ export const SurahDetail: React.FC = () => {
   const [playingAyahNumber, setPlayingAyahNumber] = useState<number | null>(null);
   const [selectedAyahNumber, setSelectedAyahNumber] = useState<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  // Ref to track playing state inside IntersectionObserver without recreating it
+  const playingAyahRef = useRef(playingAyahNumber);
+  useEffect(() => {
+    playingAyahRef.current = playingAyahNumber;
+  }, [playingAyahNumber]);
+
+  // Scroll Spy for manual scrolling
+  useEffect(() => {
+    if (!surah) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && playingAyahRef.current === null) {
+            const ayahId = entry.target.id.replace('ayah-', '');
+            setSelectedAyahNumber(parseInt(ayahId, 10));
+          }
+        });
+      },
+      {
+        rootMargin: '-20% 0px -50% 0px', // Trigger when element is in the upper half of screen
+        threshold: 0
+      }
+    );
+
+    const timeout = setTimeout(() => {
+      surah.ayat.forEach((ayah) => {
+        const el = document.getElementById(`ayah-${ayah.verse_number}`);
+        if (el) observer.observe(el);
+      });
+    }, 100);
+
+    return () => {
+      clearTimeout(timeout);
+      observer.disconnect();
+    };
+  }, [surah]);
 
   // Play audio when playingAyahNumber changes
   useEffect(() => {
@@ -142,8 +180,22 @@ export const SurahDetail: React.FC = () => {
     );
   }
 
+  const currentProgressVerse = playingAyahNumber || selectedAyahNumber || 0;
+  const progressPercentage = surah ? (currentProgressVerse / surah.verses_count) * 100 : 0;
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      {/* Global Progress Bar */}
+      <div className="fixed top-0 left-0 w-full h-1.5 bg-slate-100 dark:bg-slate-900 z-[200] shadow-sm">
+        <div 
+          className="h-full bg-gradient-to-r from-accent-primary/80 to-accent-primary transition-all duration-500 ease-out relative"
+          style={{ width: `${progressPercentage}%` }}
+        >
+          {/* Glowing tip */}
+          <div className="absolute right-0 top-0 bottom-0 w-4 bg-white/50 blur-[2px]"></div>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="glass rounded-2xl p-8 mb-10 text-center relative group z-20">
         {/* Background layer with overflow-hidden for rounded corners */}
