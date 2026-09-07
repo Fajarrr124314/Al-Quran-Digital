@@ -1,17 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, List, Settings2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, List } from 'lucide-react';
 import { getSurahDetail } from '../services/api';
 import type { SurahDetail as SurahDetailType } from '../services/api';
 import { AyahCard } from '../components/AyahCard';
-
-const RECITERS = [
-  { id: 7, name: 'Mishary Rashid Alafasy' },
-  { id: 2, name: 'AbdulBaset AbdulSamad' },
-  { id: 3, name: 'Abdur-Rahman as-Sudais' },
-  { id: 4, name: 'Abu Bakr al-Shatri' },
-  { id: 5, name: 'Hani ar-Rifai' },
-];
 
 export const SurahDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -23,7 +15,6 @@ export const SurahDetail: React.FC = () => {
   const [lastReadAyah, setLastReadAyah] = useState<number | null>(null);
 
   // Settings state
-  const [showSettings, setShowSettings] = useState(false);
   const [showTajweed, setShowTajweed] = useState(true);
   const [showLatin, setShowLatin] = useState(true);
   const [showTranslation, setShowTranslation] = useState(true);
@@ -98,12 +89,6 @@ export const SurahDetail: React.FC = () => {
 
     fetchSurahDetail();
   }, [id, selectedReciter]);
-
-  const handleReciterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newId = parseInt(e.target.value, 10);
-    setSelectedReciter(newId);
-    localStorage.setItem('selectedReciter', newId.toString());
-  };
 
   const handleBookmark = (ayahNumber: number) => {
     if (!id) return;
