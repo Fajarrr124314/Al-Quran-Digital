@@ -102,7 +102,7 @@ export const LandingPage: React.FC = () => {
         <div className="relative z-10 text-center md:text-left">
           <h2 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-3">Sumber Data Terpercaya</h2>
           <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl">
-            Aplikasi ini menggunakan layanan API Public (equran.id) yang mengacu pada <strong>Standar Kementerian Agama Republik Indonesia (Kemenag RI)</strong>. Teks ayat dan terjemahan bersumber dari basis data yang telah tervalidasi, sehingga Anda dapat membaca dengan tenang dan nyaman.
+            Aplikasi ini memadukan layanan API Public terpercaya: <strong>equran.id</strong> (Terjemahan Kemenag RI & Latin), <strong>Quran.com</strong> (Teks Utsmani, Tajwid, & Audio Qari Internasional), serta <strong>myquran.com</strong> (Jadwal Shalat akurat). Seluruh data bersumber dari basis data yang telah tervalidasi, sehingga Anda dapat beribadah dengan tenang dan nyaman.
           </p>
         </div>
       </div>
