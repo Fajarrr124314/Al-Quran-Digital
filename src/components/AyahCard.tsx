@@ -28,6 +28,7 @@ interface AyahCardProps {
   // Settings & Navigation
   totalVerses?: number;
   onOpenSettings?: () => void;
+  onJump?: (verseNumber: number) => void;
 }
 
 export const AyahCard = React.memo<AyahCardProps>(({
@@ -47,7 +48,8 @@ export const AyahCard = React.memo<AyahCardProps>(({
   isActive = false,
   onCardClick,
   totalVerses,
-  onOpenSettings
+  onOpenSettings,
+  onJump
 }) => {
   const handleShare = async () => {
     // Strip HTML tags from tajweed for sharing
@@ -169,14 +171,19 @@ export const AyahCard = React.memo<AyahCardProps>(({
                 <select
                   className="bg-transparent border-none text-accent-primary font-bold focus:ring-0 cursor-pointer outline-none text-xs appearance-none pr-1"
                   onChange={(e) => {
-                    const ayahId = `ayah-${e.target.value}`;
-                    const el = document.getElementById(ayahId);
-                    if (el) {
-                      const yOffset = -120; // Offset for sticky navbar
-                      const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                      window.scrollTo({ top: y, behavior: 'smooth' });
-                      e.target.value = ""; // Reset after jumping
+                    const ayahNum = parseInt(e.target.value, 10);
+                    if (onJump) {
+                      onJump(ayahNum);
+                    } else {
+                      const ayahId = `ayah-${ayahNum}`;
+                      const el = document.getElementById(ayahId);
+                      if (el) {
+                        const yOffset = -120; // Offset for sticky navbar
+                        const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                        window.scrollTo({ top: y, behavior: 'smooth' });
+                      }
                     }
+                    e.target.value = ""; // Reset after jumping
                   }}
                   defaultValue=""
                 >

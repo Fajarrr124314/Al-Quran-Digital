@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useDeferredValue, useMemo } from 'react';
 import { SurahCard } from '../components/SurahCard';
 import { getSurahList } from '../services/api';
 import type { Surah } from '../services/api';
@@ -9,6 +9,8 @@ export const QuranPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const deferredSearchQuery = useDeferredValue(searchQuery);
 
   useEffect(() => {
     const fetchSurahs = async () => {
@@ -25,10 +27,14 @@ export const QuranPage: React.FC = () => {
     fetchSurahs();
   }, []);
 
-  const filteredSurahs = surahs.filter((surah) =>
-    surah.name_simple.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    surah.translated_name.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredSurahs = useMemo(() => {
+    const query = deferredSearchQuery.toLowerCase();
+    if (!query) return surahs;
+    return surahs.filter((surah) =>
+      surah.name_simple.toLowerCase().includes(query) ||
+      surah.translated_name.name.toLowerCase().includes(query)
+    );
+  }, [surahs, deferredSearchQuery]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

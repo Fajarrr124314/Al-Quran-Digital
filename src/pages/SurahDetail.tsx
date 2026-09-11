@@ -38,6 +38,9 @@ export const SurahDetail: React.FC = () => {
   const [selectedAyahNumber, setSelectedAyahNumber] = useState<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   
+  const [visibleVerses, setVisibleVerses] = useState(20);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  
   // Ref to track playing state inside IntersectionObserver without recreating it
   const playingAyahRef = useRef(playingAyahNumber);
   useEffect(() => {
@@ -58,13 +61,13 @@ export const SurahDetail: React.FC = () => {
         });
       },
       {
-        rootMargin: '-20% 0px -50% 0px', // Trigger when element is in the upper half of screen
+        rootMargin: '-20% 0px -50% 0px',
         threshold: 0
       }
     );
 
     const timeout = setTimeout(() => {
-      surah.ayat.forEach((ayah) => {
+      surah.ayat.slice(0, visibleVerses).forEach((ayah) => {
         const el = document.getElementById(`ayah-${ayah.verse_number}`);
         if (el) observer.observe(el);
       });
@@ -74,6 +77,21 @@ export const SurahDetail: React.FC = () => {
       clearTimeout(timeout);
       observer.disconnect();
     };
+  }, [surah, visibleVerses]);
+
+  // Infinite Scroll Observer
+  useEffect(() => {
+    if (!surah) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleVerses((prev) => Math.min(prev + 20, surah.verses_count));
+        }
+      },
+      { rootMargin: '200px' }
+    );
+    if (loadMoreRef.current) observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
   }, [surah]);
 
   // Play audio when playingAyahNumber changes
@@ -120,6 +138,9 @@ export const SurahDetail: React.FC = () => {
         if (lastReadRaw) {
           const lastRead = JSON.parse(lastReadRaw);
           if (lastRead.surahId === surah.id && selectedAyahNumber === null) {
+            if (lastRead.verseNumber > visibleVerses) {
+              setVisibleVerses(lastRead.verseNumber + 10);
+            }
             // Give the DOM a tiny bit of time to render all AyahCards
             setTimeout(() => {
               const el = document.getElementById(`ayah-${lastRead.verseNumber}`);
@@ -164,6 +185,7 @@ export const SurahDetail: React.FC = () => {
       if (!id) return;
       if (!surah) setLoading(true); // Only hard load on first visit
       setError(null);
+      setVisibleVerses(20);
       // We don't reset selectedAyahNumber so scroll position stays visually selected
       
       try {
@@ -266,7 +288,7 @@ export const SurahDetail: React.FC = () => {
 
       {/* Verses List */}
       <div className="space-y-6">
-        {surah.ayat.map((ayah) => {
+        {surah.ayat.slice(0, visibleVerses).map((ayah) => {
           const translationIdn = ayah.translations[0]?.text || "Terjemahan tidak tersedia";
 
           return (
@@ -289,10 +311,30 @@ export const SurahDetail: React.FC = () => {
               hasAudio={!!ayah.audio?.url}
               totalVerses={surah.verses_count}
               onOpenSettings={() => setShowSettings(true)}
+              onJump={(num) => {
+                if (num > visibleVerses) {
+                  setVisibleVerses(num + 10);
+                }
+                setTimeout(() => {
+                  const el = document.getElementById(`ayah-${num}`);
+                  if (el) {
+                    const yOffset = -120;
+                    const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                    setSelectedAyahNumber(num);
+                  }
+                }, 100);
+              }}
             />
           );
         })}
       </div>
+
+      {surah && visibleVerses < surah.verses_count && (
+        <div ref={loadMoreRef} className="py-8 flex justify-center">
+          <div className="w-8 h-8 border-4 border-accent-primary/30 border-t-accent-primary rounded-full animate-spin"></div>
+        </div>
+      )}
 
       {/* Navigation Footer */}
       <div className="mt-12 flex items-center justify-between border-t border-slate-200 dark:border-slate-800 pt-8 transition-colors">
