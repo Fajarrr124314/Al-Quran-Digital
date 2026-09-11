@@ -24,7 +24,6 @@ export const SurahDetail: React.FC = () => {
 
   // Settings state
   const [showSettings, setShowSettings] = useState(false);
-  const [showTajweed, setShowTajweed] = useState(false);
   const [showLatin, setShowLatin] = useState(true);
   const [showTranslation, setShowTranslation] = useState(true);
   
@@ -296,12 +295,10 @@ export const SurahDetail: React.FC = () => {
               key={ayah.id}
               verseNumber={ayah.verse_number}
               textUthmani={ayah.text_uthmani}
-              textUthmaniTajweed={ayah.text_uthmani_tajweed || ayah.text_uthmani}
               latinText={ayah.teksLatin}
               translationIdn={translationIdn}
               isBookmarked={lastReadAyah === ayah.verse_number}
               onBookmarkToggle={() => handleBookmark(ayah.verse_number)}
-              showTajweed={showTajweed}
               showLatin={showLatin}
               showTranslation={showTranslation}
               isPlaying={playingAyahNumber === ayah.verse_number}
@@ -386,10 +383,6 @@ export const SurahDetail: React.FC = () => {
             
             <div className="space-y-6">
               <div className="space-y-4">
-                <label className="flex items-center justify-between cursor-pointer group">
-                  <span className="text-sm font-medium text-slate-600 dark:text-slate-300 group-hover:text-accent-primary transition-colors">Tajwid Berwarna</span>
-                  <input type="checkbox" checked={showTajweed} onChange={() => setShowTajweed(!showTajweed)} className="w-5 h-5 rounded text-accent-primary focus:ring-accent-primary" />
-                </label>
                 <label className="flex items-center justify-between cursor-pointer group">
                   <span className="text-sm font-medium text-slate-600 dark:text-slate-300 group-hover:text-accent-primary transition-colors">Teks Latin</span>
                   <input type="checkbox" checked={showLatin} onChange={() => setShowLatin(!showLatin)} className="w-5 h-5 rounded text-accent-primary focus:ring-accent-primary" />

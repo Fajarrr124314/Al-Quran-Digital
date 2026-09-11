@@ -7,12 +7,10 @@ import clsx from 'clsx';
 interface AyahCardProps {
   verseNumber: number;
   textUthmani: string;
-  textUthmaniTajweed: string;
   latinText?: string;
   translationIdn: string;
   isBookmarked?: boolean;
   onBookmarkToggle?: () => void;
-  showTajweed?: boolean;
   showLatin?: boolean;
   showTranslation?: boolean;
   
@@ -34,12 +32,10 @@ interface AyahCardProps {
 export const AyahCard = React.memo<AyahCardProps>(({
   verseNumber,
   textUthmani,
-  textUthmaniTajweed,
   latinText,
   translationIdn,
   isBookmarked = false,
   onBookmarkToggle,
-  showTajweed = true,
   showLatin = true,
   showTranslation = true,
   isPlaying = false,
@@ -52,10 +48,8 @@ export const AyahCard = React.memo<AyahCardProps>(({
   onJump
 }) => {
   const handleShare = async () => {
-    // Strip HTML tags from tajweed for sharing
-    const cleanText = textUthmaniTajweed.replace(/<[^>]*>?/gm, '');
     const cleanTrans = translationIdn.replace(/<[^>]*>?/gm, '');
-    const shareText = `"${cleanText}"\n\n"${cleanTrans}"\n\n(Ayat ${verseNumber})`;
+    const shareText = `"${textUthmani}"\n\n"${cleanTrans}"\n\n(Ayat ${verseNumber})`;
     if (navigator.share) {
       try {
         await navigator.share({
@@ -131,21 +125,13 @@ export const AyahCard = React.memo<AyahCardProps>(({
 
         {/* Right Side: Text Content */}
         <div className="flex-1 w-full min-w-0">
-          <div className={clsx("mb-8", showTajweed && "tajweed-container")}>
-            {showTajweed ? (
-              <div 
-                className="text-3xl md:text-4xl lg:text-5xl font-arabic text-slate-900 dark:text-white leading-loose md:leading-loose lg:leading-[1.8] text-right break-words transition-colors" 
-                dir="rtl"
-                dangerouslySetInnerHTML={{ __html: textUthmaniTajweed }}
-              />
-            ) : (
-              <div 
-                className="text-3xl md:text-4xl lg:text-5xl font-arabic text-slate-900 dark:text-white leading-loose md:leading-loose lg:leading-[1.8] text-right break-words transition-colors" 
-                dir="rtl"
-              >
-                {textUthmani}
-              </div>
-            )}
+          <div className="mb-8">
+            <div 
+              className="text-3xl md:text-4xl lg:text-5xl font-arabic text-slate-900 dark:text-white leading-loose md:leading-loose lg:leading-[1.8] text-right break-words transition-colors" 
+              dir="rtl"
+            >
+              {textUthmani}
+            </div>
           </div>
           
           <div className="space-y-3">
@@ -221,7 +207,6 @@ export const AyahCard = React.memo<AyahCardProps>(({
     prev.isActive === next.isActive &&
     prev.isBookmarked === next.isBookmarked &&
     prev.totalVerses === next.totalVerses &&
-    prev.showTajweed === next.showTajweed &&
     prev.showLatin === next.showLatin &&
     prev.showTranslation === next.showTranslation
   );
