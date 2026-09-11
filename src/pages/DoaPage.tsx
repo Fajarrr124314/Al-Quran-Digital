@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { fetchDoaList, type DoaItem } from '../services/api';
-import { Search, Loader2, BookOpen } from 'lucide-react';
+import { Search, Loader2, BookOpen, Share2 } from 'lucide-react';
+import { toPng } from 'html-to-image';
+import { DoaFlyer } from '../components/DoaFlyer';
 
 export const DoaPage: React.FC = () => {
   const [doaList, setDoaList] = useState<DoaItem[]>([]);
@@ -8,6 +10,54 @@ export const DoaPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   const [selectedDoa, setSelectedDoa] = useState<DoaItem | null>(null);
+
+  const [isSharing, setIsSharing] = useState(false);
+  const flyerRef = useRef<HTMLDivElement>(null);
+
+  const downloadImage = (dataUrl: string) => {
+    const link = document.createElement('a');
+    link.download = `doa-${selectedDoa?.id}.png`;
+    link.href = dataUrl;
+    link.click();
+  };
+
+  const handleShare = async () => {
+    if (!selectedDoa || !flyerRef.current) return;
+    
+    setIsSharing(true);
+    try {
+      // Small delay to ensure styles are applied
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const dataUrl = await toPng(flyerRef.current, {
+        pixelRatio: 2,
+        backgroundColor: '#0f172a',
+      });
+      
+      if (navigator.share) {
+        try {
+          const blob = await (await fetch(dataUrl)).blob();
+          const file = new File([blob], `doa-${selectedDoa.id}.png`, { type: 'image/png' });
+          await navigator.share({
+            title: selectedDoa.nama,
+            text: `Doa ${selectedDoa.nama} - Al-Qur'an Digital`,
+            files: [file],
+          });
+        } catch (shareErr: any) {
+          if (shareErr.name !== 'AbortError') {
+             downloadImage(dataUrl);
+          }
+        }
+      } else {
+        downloadImage(dataUrl);
+      }
+    } catch (error: any) {
+      console.error('Failed to generate flyer', error);
+      alert('Gagal membuat gambar flyer. Error: ' + (error?.message || error));
+    } finally {
+      setIsSharing(false);
+    }
+  };
 
   useEffect(() => {
     const loadDoa = async () => {
@@ -133,12 +183,23 @@ export const DoaPage: React.FC = () => {
                   {selectedDoa.nama}
                 </h2>
               </div>
-              <button 
-                onClick={() => setSelectedDoa(null)}
-                className="w-10 h-10 flex-shrink-0 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors focus:outline-none"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-              </button>
+              <div className="flex gap-2">
+                <button 
+                  onClick={handleShare}
+                  disabled={isSharing}
+                  className="px-4 py-2 rounded-xl bg-accent-primary hover:bg-accent-secondary text-white font-medium flex items-center gap-2 transition-all focus:outline-none disabled:opacity-50"
+                  title="Bagikan Gambar"
+                >
+                  {isSharing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Share2 className="w-5 h-5" />}
+                  <span className="hidden sm:inline">{isSharing ? 'Memproses...' : 'Bagikan'}</span>
+                </button>
+                <button 
+                  onClick={() => setSelectedDoa(null)}
+                  className="w-10 h-10 flex-shrink-0 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors focus:outline-none"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
             </div>
             
             {/* Modal Body */}
@@ -184,6 +245,11 @@ export const DoaPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Hidden Flyer for html2canvas */}
+      <div className="fixed top-[100vh] left-0 pointer-events-none z-[-50]">
+        <DoaFlyer ref={flyerRef} doa={selectedDoa} />
+      </div>
     </div>
   );
 };
