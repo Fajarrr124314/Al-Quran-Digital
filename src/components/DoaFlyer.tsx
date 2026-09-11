@@ -44,22 +44,22 @@ export const DoaFlyer = forwardRef<HTMLDivElement, DoaFlyerProps>(({ doa }, ref)
           {doa.nama}
         </h1>
 
-        <div className="bg-slate-900/40 backdrop-blur-xl p-12 rounded-[2rem] border border-white/10 shadow-2xl">
+        <div className="bg-slate-900/40 backdrop-blur-xl p-12 rounded-[2rem] border border-white/10 shadow-2xl w-full">
           <p 
-            className="font-arabic text-right text-white leading-[2.5]" 
-            style={{ fontSize: doa.ar.length > 200 ? '48px' : '64px' }}
+            className="font-arabic text-right text-white leading-[2.5] break-words whitespace-pre-wrap" 
+            style={{ fontSize: doa.ar.length > 400 ? '32px' : doa.ar.length > 250 ? '40px' : doa.ar.length > 150 ? '48px' : '64px' }}
             dir="rtl"
           >
             {doa.ar}
           </p>
         </div>
 
-        <div className="space-y-8 bg-slate-900/20 p-10 rounded-3xl border border-white/5 backdrop-blur-sm">
-          <p className="text-3xl font-medium text-accent-primary italic leading-relaxed">
+        <div className="space-y-8 bg-slate-900/20 p-10 rounded-3xl border border-white/5 backdrop-blur-sm w-full">
+          <p className="text-3xl font-medium text-accent-primary italic leading-relaxed break-words whitespace-pre-wrap">
             "{doa.tr}"
           </p>
           <div className="w-16 h-1 bg-white/20 rounded-full"></div>
-          <p className="text-3xl text-slate-200 leading-relaxed font-light drop-shadow-sm">
+          <p className="text-3xl text-slate-200 leading-relaxed font-light drop-shadow-sm break-words whitespace-pre-wrap">
             {doa.idn}
           </p>
         </div>
