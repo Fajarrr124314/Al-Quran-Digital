@@ -76,7 +76,7 @@ export const AyahCard = React.memo<AyahCardProps>(({
         if (onCardClick) onCardClick();
       }}
       className={clsx(
-        "glass rounded-xl p-6 md:p-8 mb-6 relative group transition-all duration-300 cursor-pointer z-10",
+        "glass rounded-xl p-6 md:p-8 mb-6 relative group transition duration-300 cursor-pointer z-10",
         isActive 
           ? "ring-2 ring-accent-primary dark:ring-white shadow-xl bg-slate-50/80 dark:bg-slate-800/80 md:scale-[1.02] border-transparent" 
           : "border border-slate-200/50 dark:border-slate-700/50 hover:border-accent-primary/30"
@@ -88,14 +88,14 @@ export const AyahCard = React.memo<AyahCardProps>(({
         <div className="flex md:flex-col items-center gap-4 w-full md:w-auto border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-700/50 pb-4 md:pb-0 md:pr-6">
           <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-center relative shadow-inner">
             <span className="text-lg font-bold text-slate-700 dark:text-slate-300 relative z-10 group-hover:text-accent-primary transition-colors">{verseNumber}</span>
-            <div className="absolute inset-0 rounded-full border border-accent-primary/0 group-hover:border-accent-primary/50 scale-110 group-hover:scale-100 transition-all duration-300"></div>
+            <div className="absolute inset-0 rounded-full border border-accent-primary/0 group-hover:border-accent-primary/50 scale-110 group-hover:scale-100 transition duration-300"></div>
           </div>
           
           <div className="flex md:flex-col gap-2 ml-auto md:ml-0">
             {hasAudio && (
               <button 
                 onClick={(e) => { e.stopPropagation(); if(onPlayToggle) onPlayToggle(); }}
-                className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/50 hover:bg-accent-primary/10 text-slate-500 dark:text-slate-400 hover:text-accent-primary dark:hover:text-accent-primary border border-transparent hover:border-accent-primary/20 transition-all"
+                className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/50 hover:bg-accent-primary/10 text-slate-500 dark:text-slate-400 hover:text-accent-primary dark:hover:text-accent-primary border border-transparent hover:border-accent-primary/20 transition-colors"
                 title={isPlaying ? "Pause Audio" : "Play Audio"}
               >
                 {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
@@ -104,7 +104,7 @@ export const AyahCard = React.memo<AyahCardProps>(({
             <button 
               onClick={(e) => { e.stopPropagation(); if(onBookmarkToggle) onBookmarkToggle(); }}
               className={clsx(
-                "p-2.5 rounded-xl border transition-all",
+                "p-2.5 rounded-xl border transition-colors",
                 isBookmarked 
                   ? "bg-accent-primary/10 border-accent-primary/50 text-accent-primary" 
                   : "bg-slate-100 dark:bg-slate-800/50 border-transparent hover:border-slate-300 dark:hover:border-slate-600 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white"
@@ -116,7 +116,7 @@ export const AyahCard = React.memo<AyahCardProps>(({
             <button 
               onClick={(e) => { e.stopPropagation(); handleShare(); }}
               title="Bagikan Ayat"
-              className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white border border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-all"
+              className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/50 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white border border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-colors"
             >
               <Share2 className="w-5 h-5" />
             </button>
@@ -152,7 +152,7 @@ export const AyahCard = React.memo<AyahCardProps>(({
           <div className="mt-6 flex flex-wrap items-center gap-3 pt-4 border-t border-slate-100 dark:border-slate-800" onClick={(e) => e.stopPropagation()}>
             {/* Jump Dropdown */}
             {totalVerses && (
-              <div className="inline-flex items-center gap-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-full px-4 py-1.5 shadow-sm transition-all hover:bg-slate-100 dark:hover:bg-slate-700">
+              <div className="inline-flex items-center gap-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-full px-4 py-1.5 shadow-sm transition-colors hover:bg-slate-100 dark:hover:bg-slate-700">
                 <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Loncat:</span>
                 <select
                   className="bg-transparent border-none text-accent-primary font-bold focus:ring-0 cursor-pointer outline-none text-xs appearance-none pr-1"
@@ -187,7 +187,7 @@ export const AyahCard = React.memo<AyahCardProps>(({
             <div>
               <button 
                 onClick={(e) => { e.stopPropagation(); if (onOpenSettings) onOpenSettings(); }}
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-all shadow-sm text-xs font-medium"
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors shadow-sm text-xs font-medium"
               >
                 <Settings2 className="w-3.5 h-3.5" />
                 <span>Pengaturan</span>
